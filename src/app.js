@@ -192,7 +192,31 @@ module.exports = (db) => {
      * }
      */
     app.get('/rides', (req, res) => {
-        db.all('SELECT * FROM Rides', function (err, rows) {
+        const page = Number(req.query.page);
+        const size = Number(req.query.size);
+        const noPaginate = !('page' in req.query) && !('size' in req.query);
+        // API return 10 data max if size not supplied
+        var values = [10, 0];
+        if (!noPaginate) {
+            if (page <= 0 || !Number.isInteger(page)) {
+                return res.status(422).send({
+                    error_code: 'VALIDATION_ERROR',
+                    message: 'Page must be an integer greater than or equal to 1.'
+                });
+            }
+
+            if (size <= 0 || !Number.isInteger(size)) {
+                return res.status(422).send({
+                    error_code: 'VALIDATION_ERROR',
+                    message: 'Size must be an integer greater than or equal to 1.'
+                });
+            }
+
+            const offset = page - 1;
+            values = [size, offset * size];
+        }
+
+        db.all('SELECT * FROM Rides LIMIT ? OFFSET ?', values, function (err, rows) {
             if (err) {
                 return res.status(500).send({
                     error_code: 'SERVER_ERROR',

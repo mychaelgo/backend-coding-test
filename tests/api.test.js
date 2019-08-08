@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 'use strict';
 
 const request = require('supertest');
@@ -10,7 +11,7 @@ const buildSchemas = require('../src/schemas');
 
 describe('API tests', () => {
     before((done) => {
-        db.serialize((err) => { 
+        db.serialize((err) => {
             if (err) {
                 return done(err);
             }

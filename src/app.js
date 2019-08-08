@@ -10,7 +10,6 @@ const jsonParser = bodyParser.json();
 app.use('/docs', express.static(path.join('public/docs')));
 
 module.exports = (db) => {
-
     /**
      * @api {get} /health Get System Health
      * @apiName Get System Health
@@ -23,13 +22,12 @@ module.exports = (db) => {
      */
     app.get('/health', (req, res) => res.send('Healthy'));
 
-
     /**
      * @api {post} /rides Create new ride
      * @apiName Post Rides
      * @apiGroup Rides
      * @apiDescription Create new ride
-     * 
+     *
      * @apiParam {Number} start_lat Start latitude
      * @apiParam {Number} start_long Start longitude
      * @apiParam {Number} end_lat End latitude
@@ -37,8 +35,8 @@ module.exports = (db) => {
      * @apiParam {String} rider_name Rider name
      * @apiParam {String} driver_name Driver name
      * @apiParam {String} driver_vehicle Driver vehicle
-     * 
-     * 
+     *
+     *
      * @apiParamExample {json} Request-Example:
      * {
      *      "start_lat": -6.188225,
@@ -49,7 +47,7 @@ module.exports = (db) => {
      *      "driver_name": "Go",
      *      "driver_vehicle": "Honda Beat",
      * }
-     * 
+     *
      * @apiSuccessExample {json} Success-Response:
      * HTTP/1.1 200 OK
      * [
@@ -65,7 +63,7 @@ module.exports = (db) => {
      *          "created": "2019-08-08 03:21:09"
      *      }
      * ]
-     * 
+     *
      * @apiErrorExample {json} Validation Error-Response:
      * HTTP/1.1 400
      * {
@@ -125,7 +123,7 @@ module.exports = (db) => {
 
         var values = [req.body.start_lat, req.body.start_long, req.body.end_lat, req.body.end_long, req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
 
-        const result = db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function (err) {
+        db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function (err) {
             if (err) {
                 return res.status(500).send({
                     error_code: 'SERVER_ERROR',
@@ -146,14 +144,13 @@ module.exports = (db) => {
         });
     });
 
-
     /**
      * @api {get} /rides Get all rides
      * @apiName Get All Rides
      * @apiGroup Rides
      * @apiDescription Get all rides
-     * 
-     * 
+     *
+     *
      * @apiSuccessExample {json} Success-Response:
      * HTTP/1.1 200 OK
      * [
@@ -169,7 +166,7 @@ module.exports = (db) => {
      *          "created": "2019-08-08 03:21:09"
      *      }
      * ]
-     * 
+     *
      * @apiErrorExample {json} Rides Error-Response:
      * HTTP/1.1 404
      * {
@@ -203,15 +200,14 @@ module.exports = (db) => {
         });
     });
 
-
     /**
      * @api {get} /rides/:id Get rides by ID
      * @apiName Get Rides by ID
      * @apiGroup Rides
      * @apiDescription Get rides by ID
-     * 
+     *
      * @apiParam {Number} id Rides unique ID.
-     * 
+     *
      * @apiSuccessExample {json} Success-Response:
      * HTTP/1.1 200 OK
      * [
@@ -227,7 +223,7 @@ module.exports = (db) => {
      *          "created": "2019-08-08 03:21:09"
      *      }
      * ]
-     * 
+     *
      * @apiErrorExample {json} Rides Error-Response:
      * HTTP/1.1 404
      * {

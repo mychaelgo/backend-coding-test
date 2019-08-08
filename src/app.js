@@ -199,16 +199,16 @@ module.exports = (db) => {
         var values = [10, 0];
         if (!noPaginate) {
             if (page <= 0 || !Number.isInteger(page)) {
-                return res.status(422).send({
+                return res.status(400).send({
                     error_code: 'VALIDATION_ERROR',
-                    message: 'Page must be an integer greater than or equal to 1.'
+                    message: 'Page must be an integer and greater than or equal to 1'
                 });
             }
 
             if (size <= 0 || !Number.isInteger(size)) {
-                return res.status(422).send({
+                return res.status(400).send({
                     error_code: 'VALIDATION_ERROR',
-                    message: 'Size must be an integer greater than or equal to 1.'
+                    message: 'Size must be an integer and greater than or equal to 1'
                 });
             }
 

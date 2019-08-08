@@ -186,6 +186,30 @@ describe('API tests', () => {
                     });
             });
         });
+
+        describe('invalid value of page', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .get('/rides?page=0&size=10')
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'Page must be an integer and greater than or equal to 1'
+                    }, done);
+            });
+        });
+
+        describe('invalid value of size', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .get('/rides?page=1&size=0')
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'Size must be an integer and greater than or equal to 1'
+                    }, done);
+            });
+        });
     });
 
     describe('GET /rides/:id', () => {

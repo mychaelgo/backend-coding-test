@@ -149,41 +149,28 @@ describe('API tests', () => {
                     }, done);
             });
         });
+
+        describe('ride added successfully', () => {
+            it('should return added ride', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        start_lat: -6.188225,
+                        start_long: 106.698526,
+                        end_lat: -6.188153,
+                        end_long: 106.738628,
+                        rider_name: 'Mychael',
+                        driver_name: 'Go',
+                        driver_vehicle: 'Honda Beat'
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(200, done);
+            });
+        });
     });
 
     describe('GET /rides', () => {
-        describe('rides not found', () => {
-            it('should throw RIDES_NOT_FOUND_ERROR', (done) => {
-                request(app)
-                    .get('/rides')
-                    .expect('Content-Type', /json/)
-                    .expect(404, {
-                        error_code: 'RIDES_NOT_FOUND_ERROR',
-                        message: 'Could not find any rides'
-                    }, done);
-            });
-        });
-
         describe('rides found', () => {
-            beforeEach(() => {
-                const values = [
-                    10,
-                    10,
-                    10,
-                    11,
-                    11,
-                    'Mychael',
-                    'Go',
-                    'Honda Beat'
-                ];
-
-                db.run('INSERT INTO Rides(rideID, startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', values, function (err) {
-                    if (err) {
-                        throw err;
-                    }
-                });
-            });
-
             it('should return all rides', (done) => {
                 request(app)
                     .get('/rides')
@@ -194,7 +181,7 @@ describe('API tests', () => {
 
                         expect(res.body).to.be.an('array');
                         expect(res.body).to.have.length(1);
-                        expect(res.body[0].rideID).to.be.equal(10);
+                        expect(res.body[0].rideID).to.be.equal(1);
                         return done();
                     });
             });
@@ -202,22 +189,8 @@ describe('API tests', () => {
     });
 
     describe('GET /rides/:id', () => {
-        describe('ride not found', () => {
-            it('should throw RIDES_NOT_FOUND_ERROR', (done) => {
-                const rideID = 'INVALID_RIDE_ID';
-
-                request(app)
-                    .get(`/rides/${rideID}`)
-                    .expect('Content-Type', /json/)
-                    .expect(404, {
-                        error_code: 'RIDES_NOT_FOUND_ERROR',
-                        message: 'Could not find any rides'
-                    }, done);
-            });
-        });
-
         describe('ride found', () => {
-            const rideID = 1;
+            const rideID = 2;
 
             beforeEach(() => {
                 const values = [

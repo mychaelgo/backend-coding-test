@@ -7,8 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha tests",
+    "test": "npm run test:lint &&  npm run test:code",
     "test:lint": "eslint .",
+    "test:code": "nyc mocha tests",
     "start": "node index.js",
     "gen-doc": "apidoc -i src/ -o public/docs/"
   },
@@ -20,6 +21,7 @@
   "dependencies": {
     "apidoc": "0.17.7",
     "body-parser": "^1.19.0",
+    "expect.js": "0.3.1",
     "express": "^4.16.4",
     "sqlite3": "^4.0.6"
   },
@@ -32,6 +34,7 @@
     "eslint-plugin-react": "7.14.3",
     "eslint-plugin-standard": "4.0.0",
     "mocha": "^6.1.4",
+    "nyc": "14.1.1",
     "supertest": "^4.0.2"
   },
   "apidoc": {

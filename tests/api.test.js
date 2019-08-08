@@ -2,6 +2,7 @@
 'use strict';
 
 const request = require('supertest');
+const expect = require('expect.js');
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database(':memory:');
@@ -28,6 +29,236 @@ describe('API tests', () => {
                 .get('/health')
                 .expect('Content-Type', /text/)
                 .expect(200, done);
+        });
+    });
+
+    describe('POST /rides', () => {
+        describe('start_lat outside range', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        start_lat: 1000
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively'
+                    }, done);
+            });
+        });
+
+        describe('start_long outside range', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        start_long: 1000
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively'
+                    }, done);
+            });
+        });
+
+        describe('end_lat outside range', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        end_lat: 1000
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'End latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively'
+                    }, done);
+            });
+        });
+
+        describe('end_long outside range', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        end_long: 1000
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'End latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively'
+                    }, done);
+            });
+        });
+
+        describe('rider name not assigned', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        start_lat: -6.188225,
+                        start_long: 106.698526,
+                        end_lat: -6.188153,
+                        end_long: 106.738628
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'Rider name must be a non empty string'
+                    }, done);
+            });
+        });
+
+        describe('driver name not assigned', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        start_lat: -6.188225,
+                        start_long: 106.698526,
+                        end_lat: -6.188153,
+                        end_long: 106.738628,
+                        rider_name: 'Mychael'
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'Driver name must be a non empty string'
+                    }, done);
+            });
+        });
+
+        describe('driver vehicle name not assigned', () => {
+            it('should throw VALIDATION_ERROR', (done) => {
+                request(app)
+                    .post('/rides')
+                    .send({
+                        start_lat: -6.188225,
+                        start_long: 106.698526,
+                        end_lat: -6.188153,
+                        end_long: 106.738628,
+                        rider_name: 'Mychael',
+                        driver_name: 'Go'
+                    })
+                    .expect('Content-Type', /json/)
+                    .expect(400, {
+                        error_code: 'VALIDATION_ERROR',
+                        message: 'Driver vehicle must be a non empty string'
+                    }, done);
+            });
+        });
+    });
+
+    describe('GET /rides', () => {
+        describe('rides not found', () => {
+            it('should throw RIDES_NOT_FOUND_ERROR', (done) => {
+                request(app)
+                    .get('/rides')
+                    .expect('Content-Type', /json/)
+                    .expect(404, {
+                        error_code: 'RIDES_NOT_FOUND_ERROR',
+                        message: 'Could not find any rides'
+                    }, done);
+            });
+        });
+
+        describe('rides found', () => {
+            beforeEach(() => {
+                const values = [
+                    10,
+                    10,
+                    10,
+                    11,
+                    11,
+                    'Mychael',
+                    'Go',
+                    'Honda Beat'
+                ];
+
+                db.run('INSERT INTO Rides(rideID, startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', values, function (err) {
+                    if (err) {
+                        throw err;
+                    }
+                });
+            });
+
+            it('should return all rides', (done) => {
+                request(app)
+                    .get('/rides')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        if (err) return done(err);
+
+                        expect(res.body).to.be.an('array');
+                        expect(res.body).to.have.length(1);
+                        expect(res.body[0].rideID).to.be.equal(10);
+                        return done();
+                    });
+            });
+        });
+    });
+
+    describe('GET /rides/:id', () => {
+        describe('ride not found', () => {
+            it('should throw RIDES_NOT_FOUND_ERROR', (done) => {
+                const rideID = 'INVALID_RIDE_ID';
+
+                request(app)
+                    .get(`/rides/${rideID}`)
+                    .expect('Content-Type', /json/)
+                    .expect(404, {
+                        error_code: 'RIDES_NOT_FOUND_ERROR',
+                        message: 'Could not find any rides'
+                    }, done);
+            });
+        });
+
+        describe('ride found', () => {
+            const rideID = 1;
+
+            beforeEach(() => {
+                const values = [
+                    rideID,
+                    10,
+                    10,
+                    11,
+                    11,
+                    'Mychael',
+                    'Go',
+                    'Honda Beat'
+                ];
+
+                db.run('INSERT INTO Rides(rideID, startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', values, function (err) {
+                    if (err) {
+                        throw err;
+                    }
+                });
+            });
+
+            it('should give success response', (done) => {
+                request(app)
+                    .get(`/rides/${rideID}`)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        if (err) return done(err);
+
+                        expect(res.body).to.be.an('array');
+                        expect(res.body).to.have.length(1);
+                        expect(res.body[0].rideID).to.be.equal(rideID);
+                        expect(res.body[0].startLat).to.be.equal(10);
+                        expect(res.body[0].startLong).to.be.equal(10);
+                        expect(res.body[0].endLat).to.be.equal(11);
+                        expect(res.body[0].endLong).to.be.equal(11);
+                        expect(res.body[0].riderName).to.be.equal('Mychael');
+                        expect(res.body[0].driverName).to.be.equal('Go');
+                        expect(res.body[0].driverVehicle).to.be.equal('Honda Beat');
+                        return done();
+                    });
+            });
         });
     });
 });

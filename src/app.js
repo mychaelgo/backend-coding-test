@@ -247,7 +247,7 @@ module.exports = (db) => {
             }
 
             if (rows.length === 0) {
-                return res.status(400).send({
+                return res.status(404).send({
                     error_code: 'RIDES_NOT_FOUND_ERROR',
                     message: 'Could not find any rides'
                 });

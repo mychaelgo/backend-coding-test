@@ -9,18 +9,27 @@ The goal of these exercises are to assess your proficiency in software engineeri
 3. Run `npm install`
 4. Run `npm test`
 5. Run `npm start`
-6. Hit the server to test health `curl localhost:8010/health` and expect a `200` response 
+6. Run `npm run gen-doc` for generate documentation, docs deployed at `/docs` endpoint
+7. Hit the server to test health `curl localhost:8010/health` and expect a `200` response 
 
 ## Tasks
 
 Below will be your set of tasks to accomplish. Please work on each of these tasks in order. Success criteria will be defined clearly for each task
 
-1. [Documentation](#documentation)
-2. [Implement Tooling](#implement-tooling)
-3. [Implement Pagination](#implement-pagination)
-4. [Refactoring](#refactoring)
-5. [Security](#security)
-6. [Load Testing](#load-testing)
+- [Xendit Coding Exercise](#xendit-coding-exercise)
+  - [Setup](#setup)
+  - [Tasks](#tasks)
+    - [Documentation](#documentation)
+      - [Success Criteria](#success-criteria)
+    - [Implement Tooling](#implement-tooling)
+      - [Success Criteria](#success-criteria-1)
+    - [Implement Pagination](#implement-pagination)
+    - [Refactoring](#refactoring)
+      - [Success Criteria](#success-criteria-2)
+    - [Security](#security)
+      - [Success Criteria](#success-criteria-3)
+    - [Load Testing](#load-testing)
+      - [Success Criteria](#success-criteria-4)
 
 ### Documentation
 
@@ -29,7 +38,7 @@ Please deliver documentation of the server that clearly explains the goals of th
 #### Success Criteria
 
 1. A pull request against `master` of your fork with a clear description of the change and purpose and merge it
-3. **[BONUS]** Create an easy way to deploy and view the documentation in a web format and include instructions to do so
+2. **[BONUS]** Create an easy way to deploy and view the documentation in a web format and include instructions to do so
 
 ### Implement Tooling
 

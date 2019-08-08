@@ -6,8 +6,19 @@ var path = require('path');
 
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const winston = require('winston');
+const expressWinston = require('express-winston');
 
 app.use('/docs', express.static(path.join('public/docs')));
+app.use(expressWinston.logger({
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({
+            filename: './logs/info.log',
+            json: false
+        })
+    ]
+}));
 
 module.exports = (db) => {
     /**
@@ -256,6 +267,15 @@ module.exports = (db) => {
             res.send(rows);
         });
     });
+
+    app.use(expressWinston.errorLogger({
+        transports: [
+            new winston.transports.Console(),
+            new winston.transports.File({
+                filename: './logs/error.log'
+            })
+        ]
+    }));
 
     return app;
 };

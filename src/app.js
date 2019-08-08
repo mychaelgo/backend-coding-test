@@ -6,11 +6,21 @@ var path = require('path');
 
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const winston = require('winston');
+const expressWinston = require('express-winston');
 
 app.use('/docs', express.static(path.join('public/docs')));
+app.use(expressWinston.logger({
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({
+            filename: './logs/info.log',
+            json: false
+        })
+    ]
+}));
 
 module.exports = (db) => {
-
     /**
      * @api {get} /health Get System Health
      * @apiName Get System Health
@@ -23,13 +33,12 @@ module.exports = (db) => {
      */
     app.get('/health', (req, res) => res.send('Healthy'));
 
-
     /**
      * @api {post} /rides Create new ride
      * @apiName Post Rides
      * @apiGroup Rides
      * @apiDescription Create new ride
-     * 
+     *
      * @apiParam {Number} start_lat Start latitude
      * @apiParam {Number} start_long Start longitude
      * @apiParam {Number} end_lat End latitude
@@ -37,8 +46,8 @@ module.exports = (db) => {
      * @apiParam {String} rider_name Rider name
      * @apiParam {String} driver_name Driver name
      * @apiParam {String} driver_vehicle Driver vehicle
-     * 
-     * 
+     *
+     *
      * @apiParamExample {json} Request-Example:
      * {
      *      "start_lat": -6.188225,
@@ -49,7 +58,7 @@ module.exports = (db) => {
      *      "driver_name": "Go",
      *      "driver_vehicle": "Honda Beat",
      * }
-     * 
+     *
      * @apiSuccessExample {json} Success-Response:
      * HTTP/1.1 200 OK
      * [
@@ -65,7 +74,7 @@ module.exports = (db) => {
      *          "created": "2019-08-08 03:21:09"
      *      }
      * ]
-     * 
+     *
      * @apiErrorExample {json} Validation Error-Response:
      * HTTP/1.1 400
      * {
@@ -125,7 +134,7 @@ module.exports = (db) => {
 
         var values = [req.body.start_lat, req.body.start_long, req.body.end_lat, req.body.end_long, req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
 
-        const result = db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function (err) {
+        db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function (err) {
             if (err) {
                 return res.status(500).send({
                     error_code: 'SERVER_ERROR',
@@ -146,14 +155,13 @@ module.exports = (db) => {
         });
     });
 
-
     /**
      * @api {get} /rides Get all rides
      * @apiName Get All Rides
      * @apiGroup Rides
      * @apiDescription Get all rides
-     * 
-     * 
+     *
+     *
      * @apiSuccessExample {json} Success-Response:
      * HTTP/1.1 200 OK
      * [
@@ -169,7 +177,7 @@ module.exports = (db) => {
      *          "created": "2019-08-08 03:21:09"
      *      }
      * ]
-     * 
+     *
      * @apiErrorExample {json} Rides Error-Response:
      * HTTP/1.1 404
      * {
@@ -203,15 +211,14 @@ module.exports = (db) => {
         });
     });
 
-
     /**
      * @api {get} /rides/:id Get rides by ID
      * @apiName Get Rides by ID
      * @apiGroup Rides
      * @apiDescription Get rides by ID
-     * 
+     *
      * @apiParam {Number} id Rides unique ID.
-     * 
+     *
      * @apiSuccessExample {json} Success-Response:
      * HTTP/1.1 200 OK
      * [
@@ -227,7 +234,7 @@ module.exports = (db) => {
      *          "created": "2019-08-08 03:21:09"
      *      }
      * ]
-     * 
+     *
      * @apiErrorExample {json} Rides Error-Response:
      * HTTP/1.1 404
      * {
@@ -251,7 +258,7 @@ module.exports = (db) => {
             }
 
             if (rows.length === 0) {
-                return res.status(400).send({
+                return res.status(404).send({
                     error_code: 'RIDES_NOT_FOUND_ERROR',
                     message: 'Could not find any rides'
                 });
@@ -260,6 +267,15 @@ module.exports = (db) => {
             res.send(rows);
         });
     });
+
+    app.use(expressWinston.errorLogger({
+        transports: [
+            new winston.transports.Console(),
+            new winston.transports.File({
+                filename: './logs/error.log'
+            })
+        ]
+    }));
 
     return app;
 };

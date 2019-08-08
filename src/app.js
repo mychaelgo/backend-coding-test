@@ -156,10 +156,10 @@ module.exports = (db) => {
     });
 
     /**
-     * @api {get} /rides Get all rides
+     * @api {get} /rides?page=1&size=20 Get all rides
      * @apiName Get All Rides
      * @apiGroup Rides
-     * @apiDescription Get all rides
+     * @apiDescription Get all rides. If page & size parameter not supplied. API will return only first 10 data.
      *
      *
      * @apiSuccessExample {json} Success-Response:

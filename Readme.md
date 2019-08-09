@@ -1,5 +1,5 @@
 # Xendit Coding Exercise
-
+[![CircleCI](https://circleci.com/gh/mychaelgo/backend-coding-test.svg?style=svg)](https://circleci.com/gh/mychaelgo/backend-coding-test)
 The goal of these exercises are to assess your proficiency in software engineering that is related to the daily work that we do at Xendit. Please follow the instructions below to complete the assessment.
 
 ## Setup

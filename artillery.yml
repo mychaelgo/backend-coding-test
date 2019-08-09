@@ -1,0 +1,31 @@
+config:
+  target: "http://localhost:8010"
+  phases:
+    - duration: 30
+      arrivalRate: 100
+  ensure:
+    p99: 50
+scenarios:
+  - name: "Load test all endpoints"
+    flow:
+      - post:
+          url: "/rides"
+          json:
+            start_lat: -6.188225
+            start_long: 106.698526
+            end_lat: -6.188153
+            end_long: 106.738628
+            rider_name: "Mychael'"
+            driver_name: "Go"
+            driver_vehicle: "Honda Beat"
+      - get:
+          url: "/rides"
+          qs:
+            page: 1
+            size: 10
+      - get:
+          url: "/rides/1"
+      - get:
+          url: "/health"
+      - get:
+          url: "/docs"

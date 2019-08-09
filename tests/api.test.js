@@ -257,4 +257,32 @@ describe('API tests', () => {
             });
         });
     });
+
+    describe('security', () => {
+        it('prevent sql injection when add ride', (done) => {
+            request(app)
+                .post('/rides')
+                .send({
+                    start_lat: -6.188225,
+                    start_long: 106.698526,
+                    end_lat: -6.188153,
+                    end_long: 106.738628,
+                    rider_name: 'Mychael\'s OR \'1=1',
+                    driver_name: 'Go',
+                    driver_vehicle: 'Honda Beat'
+                })
+                .expect('Content-Type', /json/)
+                .expect(200, done);
+        });
+
+        it('prevent sql injection when get a single ride', (done) => {
+            request(app)
+                .get('/rides/3\' OR \'3=3')
+                .expect('Content-Type', /json/)
+                .expect(400, {
+                    error_code: 'VALIDATION_ERROR',
+                    message: 'ID must be an integer'
+                }, done);
+        });
+    });
 });

@@ -267,7 +267,15 @@ module.exports = () => {
      */
     app.get('/rides/:id', async (req, res) => {
         try {
-            const rows = await sql.getAsync(`SELECT * FROM Rides WHERE rideID='${req.params.id}'`);
+            const id = Number(req.params.id);
+            if (!Number.isInteger(id) || Number.isNaN(id)) {
+                return res.status(400).send({
+                    error_code: 'VALIDATION_ERROR',
+                    message: 'ID must be an integer'
+                });
+            }
+
+            const rows = await sql.getAsync('SELECT * FROM Rides WHERE rideID=?', id);
             if (rows.length === 0) {
                 return res.status(404).send({
                     error_code: 'RIDES_NOT_FOUND_ERROR',

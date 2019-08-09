@@ -5,8 +5,7 @@ const request = require('supertest');
 const expect = require('expect.js');
 
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database(':memory:');
-
+global.db = new sqlite3.Database(':memory:');
 const app = require('../src/app')(db);
 const buildSchemas = require('../src/schemas');
 

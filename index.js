@@ -9,6 +9,7 @@ const buildSchemas = require('./src/schemas');
 
 db.serialize(() => {
     buildSchemas(db);
+    global.db = db;
 
     const app = require('./src/app')(db);
 
